@@ -1,25 +1,23 @@
-import React from "react";
+import React from 'react';
 
 const Product = () => {
-  return (
-    <div>
-      <div className="card lg:card-side bg-base-100 shadow-xl">
-        <figure>
-          <img
-            src="https://api.lorem.space/image/album?w=400&h=400"
-            alt="Album"
-          />
-        </figure>
-        <div className="card-body">
-          <h2 className="card-title">New album is released!</h2>
-          <p>Click the button to listen on Spotiwhy app.</p>
-          <div className="card-actions justify-end">
-            <button className="btn btn-primary">Listen</button>
-          </div>
+    return (
+        <div class="card w-96 bg-base-100 shadow-xl">
+            <figure class="px-10 pt-10">
+                <img src="https://api.lorem.space/image/shoes?w=400&h=225" alt="Shoes" class="rounded-xl" />
+            </figure>
+            <div class="card-body items-center text-center">
+                <h2 class="card-title">Product Name</h2>
+                <p>If a dog chews shoes whose shoes does he choose?</p>
+                <p><small>Minimum Order Quantity: 100</small></p>
+                <p><small>Available Quantity: 1000</small></p>
+                <p><small>Price: $500</small></p>
+                <div class="card-actions">
+                    <button class="btn btn-primary uppercase">purchase now</button>
+                </div>
+            </div>
         </div>
-      </div>
-    </div>
-  );
+    );
 };
 
 export default Product;
