@@ -1,6 +1,23 @@
 import React from "react";
+import { Link } from "react-router-dom";
 
 const Navber = () => {
+  const myItems = (
+    <>
+      <li>
+        <Link to="/">Home</Link>
+      </li>
+      <li>
+        <Link to="/product">Product</Link>
+      </li>
+      <li>
+        <Link to="/blogs">Blogs</Link>
+      </li>
+      <li>
+        <Link to="/about">About Us</Link>
+      </li>
+    </>
+  );
   return (
     <div>
       <div className="navbar bg-base-100">
@@ -26,72 +43,28 @@ const Navber = () => {
               tabIndex="0"
               className="menu menu-compact dropdown-content mt-3 p-2 shadow bg-base-100 rounded-box w-52"
             >
-              <li>
-                <a href="www.google.com">Item 1</a>
-              </li>
-              <li tabIndex="0">
-                <a href="www.google.com" className="justify-between">
-                  Parent
-                  <svg
-                    className="fill-current"
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="24"
-                    height="24"
-                    viewBox="0 0 24 24"
-                  >
-                    <path d="M8.59,16.58L13.17,12L8.59,7.41L10,6L16,12L10,18L8.59,16.58Z" />
-                  </svg>
-                </a>
-                <ul className="p-2">
-                  <li>
-                    <a href="www.google.com">Submenu 1</a>
-                  </li>
-                  <li>
-                    <a href="www.google.com">Submenu 2</a>
-                  </li>
-                </ul>
-              </li>
-              <li>
-                <a href="www.google.com">Item 3</a>
-              </li>
+              {myItems}
             </ul>
           </div>
-          <a href="www.google.com" className="btn btn-ghost normal-case text-xl">daisyUI</a>
+          <a
+            href="www.google.com"
+            className="btn btn-ghost normal-case text-xl"
+          >
+            <img
+              src="https://cdn.shopify.com/s/files/1/0111/9115/6794/files/logo_0a450d47-4f31-46a7-8827-8ded29b537d4_medium.png?v=1528879324"
+              alt=""
+            />
+          </a>
         </div>
         <div className="navbar-center hidden lg:flex">
-          <ul className="menu menu-horizontal p-0">
-            <li>
-              <a href="www.google.com" >Item 1</a>
-            </li>
-            <li tabIndex="0">
-              <a href="www.google.com">
-                Parent
-                <svg
-                  className="fill-current"
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="20"
-                  height="20"
-                  viewBox="0 0 24 24"
-                >
-                  <path d="M7.41,8.58L12,13.17L16.59,8.58L18,10L12,16L6,10L7.41,8.58Z" />
-                </svg>
-              </a>
-              <ul className="p-2">
-                <li>
-                  <a href="www.google.com">Submenu 1</a>
-                </li>
-                <li>
-                  <a href="www.google.com">Submenu 2</a>
-                </li>
-              </ul>
-            </li>
-            <li>
-              <a href="www.google.com">Item 3</a>
-            </li>
-          </ul>
+          <ul className="menu menu-horizontal p-0">{myItems}</ul>
         </div>
         <div className="navbar-end">
-          <a href="www.google.com" className="btn">Get started</a>
+          <li>
+            <Link to="/login" className="btn">
+              Login
+            </Link>
+          </li>
         </div>
       </div>
     </div>
