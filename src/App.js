@@ -9,6 +9,7 @@ import PageNotFound from "./pages/PageNotFound/PageNotFound";
 import Products from "./pages/Home/Products/Products";
 import RequireAuth from "./pages/LogIn/RequireAuth";
 import Purchase from "./pages/Purchase/Purchase";
+import AddProduct from "./pages/AddProduct/AddProduct";
 
 function App() {
   return (
@@ -20,6 +21,7 @@ function App() {
         <Route path="/signup" element={<SignUp />} />
         <Route path="*" element={<PageNotFound />}></Route>
         <Route path="/products" element={<Products />}></Route>
+        <Route path="/add-product" element={<AddProduct />}></Route>
         <Route
           path="/purchase"
           element={
