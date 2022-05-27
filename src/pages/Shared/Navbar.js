@@ -8,6 +8,7 @@ const Navbar = () => {
   const [user] = useAuthState(auth);
   const logOut = () => {
     signOut(auth);
+    localStorage.removeItem('accessToken');
   };
   const myItems = (
     <>
@@ -19,9 +20,6 @@ const Navbar = () => {
           <Link to="/dashboard">Dashboard</Link>
         </li>
       )}
-      <li>
-        <Link to="/purchase">Purchase</Link>
-      </li>
       <li>
         <Link to="/blogs">Blogs</Link>
       </li>
