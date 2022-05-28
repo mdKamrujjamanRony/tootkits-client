@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 const Product = ({product}) => {
     const {_id, image, name, description, min_quantity, available_quantity, price} = product;
