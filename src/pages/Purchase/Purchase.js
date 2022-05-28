@@ -1,27 +1,96 @@
-import React, { useEffect, useState } from "react";
+import axios from "axios";
+import React, { useEffect, useRef, useState } from "react";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { useParams } from "react-router-dom";
+import { toast } from "react-toastify";
 import auth from "../../firebase.init";
 
 const Purchase = () => {
   const { id } = useParams();
   const [user] = useAuthState(auth);
   const [product, setProduct] = useState({});
+  const quantityRef = useRef();
+  const [buttonDisabled, setButtonDisabled] = useState(false);
+  const [purchase, setPurchase] = useState(false);
   useEffect(() => {
     const url = `http://localhost:5000/product/${id}`;
     fetch(url)
       .then((res) => res.json())
       .then((data) => setProduct(data));
   }, [id]);
-  const { _id, name, description, min_quantity, available_quantity, price } =
-    product;
+  const {
+    _id,
+    image,
+    name,
+    description,
+    min_quantity,
+    available_quantity,
+    price,
+  } = product;
+  const updateQuantity = () => {
+    const quantity = parseInt(quantityRef.current.value);
+
+    if (
+      parseInt(min_quantity) > quantity ||
+      parseInt(available_quantity) < quantity
+    ) {
+      setButtonDisabled(true);
+    } else {
+      setButtonDisabled(false);
+    }
+  };
+  const orderSubmit = (event) => {
+    event.preventDefault();
+    const quantity = parseInt(quantityRef.current.value);
+    const orderPrice = quantity * price;
+    const newQuantity = parseInt(available_quantity) - quantity;
+
+    const updateProduct = {
+      _id: _id,
+      name: name,
+      image: image,
+      description: description,
+      price: price,
+      min_quantity: min_quantity,
+      available_quantity: newQuantity,
+    };
+
+    setProduct(updateProduct);
+    const order = {
+      image: image,
+      name: name,
+      email: user.email,
+      quantity: quantity,
+      price: orderPrice,
+      phone: event.target.phone?.value,
+      address: event.target.address?.value,
+    };
+    //send data to the server
+    const url = `http://localhost:5000/product/${id}`;
+    fetch(url, {
+      method: "PUT",
+      headers: {
+        "content-type": "application/json",
+      },
+      body: JSON.stringify(updateProduct),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        setPurchase(true);
+      });
+    // create order
+    axios.post("http://localhost:5000/order", order).then((response) => {
+      const { data } = response;
+      if (data.insertedId) {
+        toast("Your order is added!");
+        event.target.reset();
+      }
+    });
+  };
   return (
     <div className="card lg:card-side bg-base-100 shadow-xl container mx-auto">
       <figure>
-        <img
-          src="https://api.lorem.space/image/album?w=400&h=400"
-          alt="Album"
-        />
+        <img src={image} alt="" />
       </figure>
       <div className="card-body">
         <h2 className="text-4xl font-bold">{description}</h2>
@@ -30,28 +99,7 @@ const Purchase = () => {
         <p>Available Quantity: {available_quantity}</p>
         <p>Price: ${price}</p>
 
-        <form className="w-full max-w-lg">
-          <div className="flex">
-            <label
-              className="block uppercase tracking-wide text-gray-700 text-sm lg:text-xl font-bold mb-2 mr-2 pt-2"
-              htmlFor="quantity"
-            >
-              Order Quantity:
-            </label>
-            <button className="bg-transparent hover:bg-red-500 text-red-700 font-bold hover:text-white px-4 border border-red-500 hover:border-transparent rounded text-xl">
-              -
-            </button>
-            <input
-              className="w-1/5 appearance-none block bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
-              id="quantity"
-              type="text"
-              value={min_quantity}
-            />
-            <button className="bg-transparent hover:bg-green-500 text-green-700 font-bold hover:text-white px-4 border border-green-500 hover:border-transparent rounded text-xl">
-              +
-            </button>
-          </div>
-
+        <form onSubmit={orderSubmit} className="w-full max-w-lg">
           <div className="flex flex-wrap -mx-3">
             <div className="w-full px-3">
               <label
@@ -92,6 +140,25 @@ const Purchase = () => {
             <div className="w-full px-3">
               <label
                 className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
+                htmlFor="quantity"
+              >
+                Order Quantity
+              </label>
+              <input
+                className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+                id="quantity"
+                ref={quantityRef}
+                onChange={updateQuantity}
+                type="text"
+                placeholder="Oreder Quantity"
+              />
+            </div>
+          </div>
+
+          <div className="flex flex-wrap -mx-3">
+            <div className="w-full px-3">
+              <label
+                className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
                 htmlFor="phone"
               >
                 Phone
@@ -99,8 +166,9 @@ const Purchase = () => {
               <input
                 className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
                 id="phone"
+                name="phone"
                 type="text"
-                placeholder="Phone Or Telephone Number"
+                placeholder="Phone or Telephone Number"
               />
             </div>
           </div>
@@ -116,6 +184,7 @@ const Purchase = () => {
               <input
                 className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
                 id="address"
+                name="address"
                 type="text"
                 placeholder="Enter you address"
               />
@@ -127,10 +196,55 @@ const Purchase = () => {
               type="submit"
               value="purchase"
               className="btn btn-primary my-5 w-full"
+              disabled={buttonDisabled}
             />
           </div>
         </form>
       </div>
+      {buttonDisabled === true ? (
+        <div class="h-12 w-96 alert alert-error shadow-lg">
+          <div>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="stroke-current flex-shrink-0 h-6 w-6"
+              fill="none"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
+            </svg>
+            <span>Error! Enter valid Order Quantity.</span>
+          </div>
+        </div>
+      ) : (
+        ""
+      )}
+      {purchase === true ? (
+        <div class="h-12 w-96 alert alert-success shadow-lg">
+          <div>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="stroke-current flex-shrink-0 h-6 w-6"
+              fill="none"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
+            </svg>
+            <span>Your purchase has been confirmed!</span>
+          </div>
+        </div>
+      ) : (
+        ""
+      )}
     </div>
   );
 };
