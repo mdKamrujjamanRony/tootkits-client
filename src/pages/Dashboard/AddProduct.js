@@ -1,19 +1,53 @@
 import React from "react";
+import { useAuthState } from "react-firebase-hooks/auth";
 import { useForm } from "react-hook-form";
+import { toast } from "react-toastify";
+import auth from "../../firebase.init";
 
-const AddDoctor = () => {
+const AddProduct = () => {
+  const [user] = useAuthState(auth);
   const {
     register,
     formState: { errors },
     handleSubmit,
+    reset
   } = useForm();
 
   const onSubmit = async (data) => {
     console.log("data", data);
+    const product = {
+        username: user.displayName,
+        email: user.email,
+        name: data.name,
+        image: data.image,
+        description: data.description,
+        min_quantity: data.min_quantity,
+        available_quantity: data.available_quantity,
+        price: data.price,
+    }
+    // send to database 
+    fetch('http://localhost:5000/product', {
+        method: 'POST',
+        headers: {
+            'content-type': 'application/json',
+            authorization: `Bearer ${localStorage.getItem('accessToken')}`
+        },
+        body: JSON.stringify(product)
+    })
+    .then(res =>res.json())
+    .then(inserted =>{
+        if(inserted.insertedId){
+            toast.success('Product added successfully')
+            reset();
+        }
+        else{
+            toast.error('Failed to add the Product');
+        }
+    })
   };
 
   return (
-    <div className="w-1/4 mx-auto">
+    <div className="w-1/4 mx-auto mb-5">
       <h2 className="text-2xl">Add a New Product</h2>
       <form onSubmit={handleSubmit(onSubmit)}>
         <div className="form-control w-full max-w-xs">
@@ -22,22 +56,10 @@ const AddDoctor = () => {
           </label>
           <input
             type="text"
-            placeholder="Your Name"
             className="input input-bordered w-full max-w-xs"
-            {...register("username", {
-              required: {
-                value: true,
-                message: "Name is Required",
-              },
-            })}
+            value={user.displayName}
+            disabled
           />
-          <label className="label">
-            {errors.name?.type === "required" && (
-              <span className="label-text-alt text-red-500">
-                {errors.name.message}
-              </span>
-            )}
-          </label>
         </div>
 
         <div className="form-control w-full max-w-xs">
@@ -48,29 +70,9 @@ const AddDoctor = () => {
             type="email"
             placeholder="Your Email"
             className="input input-bordered w-full max-w-xs"
-            {...register("email", {
-              required: {
-                value: true,
-                message: "Email is Required",
-              },
-              pattern: {
-                value: /[a-z0-9]+@[a-z]+\.[a-z]{2,3}/,
-                message: "Provide a valid Email",
-              },
-            })}
+            value={user.email}
+            disabled
           />
-          <label className="label">
-            {errors.email?.type === "required" && (
-              <span className="label-text-alt text-red-500">
-                {errors.email.message}
-              </span>
-            )}
-            {errors.email?.type === "pattern" && (
-              <span className="label-text-alt text-red-500">
-                {errors.email.message}
-              </span>
-            )}
-          </label>
         </div>
         <div className="form-control w-full max-w-xs">
           <label className="label">
@@ -114,7 +116,7 @@ const AddDoctor = () => {
             type="text"
             placeholder="Product image"
             className="input input-bordered w-full max-w-xs"
-            {...register("Image", {
+            {...register("image", {
               required: {
                 value: true,
                 message: "Product Image is Required",
@@ -142,7 +144,7 @@ const AddDoctor = () => {
             type="text"
             placeholder="Minimum Quantity"
             className="input input-bordered w-full max-w-xs"
-            {...register("min-quantity", {
+            {...register("min_quantity", {
               required: {
                 value: true,
                 message: "Minimum Quantity is Required",
@@ -170,7 +172,7 @@ const AddDoctor = () => {
             type="text"
             placeholder="Available Quantity"
             className="input input-bordered w-full max-w-xs"
-            {...register("available-Quantity", {
+            {...register("available_quantity", {
               required: {
                 value: true,
                 message: "Available Quantity is Required",
@@ -222,11 +224,11 @@ const AddDoctor = () => {
         <input
           className="btn w-full max-w-xs text-white"
           type="submit"
-          value="Add"
+          value="Add Product"
         />
       </form>
     </div>
   );
 };
 
-export default AddDoctor;
+export default AddProduct;

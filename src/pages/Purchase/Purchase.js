@@ -93,8 +93,8 @@ const Purchase = () => {
         <img src={image} alt="" />
       </figure>
       <div className="card-body">
-        <h2 className="text-4xl font-bold">{description}</h2>
-        <p>{name}</p>
+        <h2 className="text-4xl font-bold">{name}</h2>
+        <p>{description}</p>
         <p>Minimum Order Quantity: {min_quantity}</p>
         <p>Available Quantity: {available_quantity}</p>
         <p>Price: ${price}</p>
@@ -150,7 +150,7 @@ const Purchase = () => {
                 ref={quantityRef}
                 onChange={updateQuantity}
                 type="text"
-                placeholder="Oreder Quantity"
+                placeholder="Order Quantity"
               />
             </div>
           </div>
@@ -233,9 +233,9 @@ const Purchase = () => {
               viewBox="0 0 24 24"
             >
               <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
                 d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
               />
             </svg>
